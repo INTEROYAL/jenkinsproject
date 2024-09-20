@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS 16' // Use the name configured in Global Tool Configuration
+        nodejs 'NodeJS16' // Use the name configured in Global Tool Configuration
     }
 
     stages {
