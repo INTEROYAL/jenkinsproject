@@ -1,31 +1,11 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS16' // Use the name configured in Global Tool Configuration
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
                 // Checkout the repository
                 git url: 'https://github.com/INTEROYAL/jenkinsproject.git', branch: 'main'
-            }
-        }
-
-        stage('Check Node.js and npm Versions') {
-            steps {
-                // Check Node.js and npm versions
-                sh 'node --version'
-                sh 'npm --version'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                // Install dependencies and prepare the website for deployment
-                sh 'npm install' // Change to the command suitable for your tech stack
-                sh 'npm run build' // Adjust as necessary for your website's build process
             }
         }
 
@@ -41,19 +21,11 @@ pipeline {
             }
         }
 
-        // Optional Test Stage
-        // stage('Test') {
-        //     steps {
-        //         // Optional: Run automated tests if you have any
-        //         // sh 'npm test' or equivalent
-        //     }
-        // }
-
         stage('Deploy to S3') {
             steps {
-                // Deploy your site to an S3 bucket
+                // Deploy your static website files to the S3 bucket
                 withAWS(credentials: 'aws-jenkins-credentials', region: 'us-east-2') {
-                    s3Upload(bucket: 'testttting83898', file: 'build/**')
+                    s3Upload(bucket: 'testttting83898', file: '**/*') // Upload all files in the repo
                 }
             }
         }
@@ -61,7 +33,7 @@ pipeline {
 
     post {
         always {
-            // Clean up workspace
+            // Clean up, or send notifications, etc.
             cleanWs()
         }
     }
