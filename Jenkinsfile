@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS 16' // Use the name configured in Global Tool Configuration
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -9,17 +13,21 @@ pipeline {
             }
         }
 
+        stage('Check Node.js and npm Versions') {
+            steps {
+                // Check Node.js and npm versions
+                sh 'node --version'
+                sh 'npm --version'
+            }
+        }
+
         stage('Build') {
             steps {
-                // Install dependencies (if any) and prepare the website for deployment
-                // For example, if your website uses Node.js or another build tool
+                // Install dependencies and prepare the website for deployment
                 sh 'npm install' // Change to the command suitable for your tech stack
                 sh 'npm run build' // Adjust as necessary for your website's build process
             }
         }
-
-
-
 
         stage('Create S3 Bucket') {
             steps {
@@ -33,8 +41,7 @@ pipeline {
             }
         }
 
-
-
+        // Optional Test Stage
         // stage('Test') {
         //     steps {
         //         // Optional: Run automated tests if you have any
@@ -42,20 +49,19 @@ pipeline {
         //     }
         // }
 
-        stage('Deployto S3') {
+        stage('Deploy to S3') {
             steps {
-                // Deploy your site to a web server (e.g., AWS S3, FTP server, etc.)
-                // Example for deploying to an S3 bucket
+                // Deploy your site to an S3 bucket
                 withAWS(credentials: 'aws-jenkins-credentials', region: 'us-east-2') {
-                    s3Upload(bucket: 'testttting838980', file: 'build/**')
-                 }
+                    s3Upload(bucket: 'testttting83898', file: 'build/**')
+                }
             }
         }
     }
 
     post {
         always {
-            // Clean up, or send notifications, etc.
+            // Clean up workspace
             cleanWs()
         }
     }
