@@ -9,6 +9,13 @@ pipeline {
             }
         }
 
+        stage('List Workspace Contents') {
+            steps {
+                // List the contents of the workspace
+                sh 'ls -al'
+            }
+        }
+
         stage('Create S3 Bucket') {
             steps {
                 script {
