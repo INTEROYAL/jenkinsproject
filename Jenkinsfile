@@ -4,15 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Checkout the repository
-                git url: 'https://github.com/INTEROYAL/jenkinsproject.git', branch: 'main'
-            }
-        }
-
-        stage('List Workspace Contents') {
-            steps {
-                // List the contents of the workspace
-                sh 'ls -al'
+                git url: 'https://github.com/INTEROYAL/jenkinsproject.git', branch: 'main', credentialsId: 'github-pat'
             }
         }
 
@@ -28,11 +20,16 @@ pipeline {
             }
         }
 
+        stage('List Files') {
+            steps {
+                sh 'ls -al'
+            }
+        }
+
         stage('Deploy to S3') {
             steps {
-                // Deploy your static website files to the S3 bucket
                 withAWS(credentials: 'aws-jenkins-credentials', region: 'us-east-2') {
-                    s3Upload(bucket: 'testttting83898', file: '**/*') // Upload all files in the repo
+                    s3Upload(bucket: 'testttting83898', file: '*') // Adjusted file path
                 }
             }
         }
@@ -40,7 +37,6 @@ pipeline {
 
     post {
         always {
-            // Clean up, or send notifications, etc.
             cleanWs()
         }
     }
